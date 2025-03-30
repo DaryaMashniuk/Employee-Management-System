@@ -7,7 +7,8 @@ public enum CommandType {
     LOGIN(new LoginCommand()),
     LOGOUT(new LogoutCommand()),
     VERIFY(new VerifyEmailCommand()),
-    DEFAULT(new DefaultCommand());
+    DEFAULT(new DefaultCommand()),
+    EDITPROFILE(new EditProfileCommand());
 
     Command command;
     CommandType(Command command) {

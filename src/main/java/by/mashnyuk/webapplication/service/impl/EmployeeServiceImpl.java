@@ -51,6 +51,33 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public int editProfile(String firstName, String lastName, String username, String address, String email) {
+        log.info("Editing profile data for user: {}", username);
+
+        if (!ValidationUtil.isValidName(firstName)) {
+            log.warn("Invalid first name: {}", firstName);
+            return -1;
+        }
+        if (!ValidationUtil.isValidName(lastName)) {
+            log.warn("Invalid last name: {}", lastName);
+            return -2;
+        }
+        if (!ValidationUtil.isValidAddress(address)) {
+            log.warn("Invalid address for user: {}", username);
+            return -5;
+        }
+        if (!ValidationUtil.isValidEmail(email)) {
+            log.warn("Invalid email for user: {}", username);
+            return -6;
+        }
+
+        Employee employee = new Employee(firstName, lastName, username, address, email);
+        int result = employeeDao.editProfile(employee);
+
+        return result;
+    }
+
+    @Override
     public int register(String firstName, String lastName, String username, String password, String address, String email) {
         log.info("Validating registration data for user: {}", username);
 
@@ -78,10 +105,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             log.warn("Invalid email for user: {}", username);
             return -6;
         }
-        if (isEmailExists(email)) {
-            log.warn("Email already exists: {}", email);
-            return -7;
-        }
+//        if (isEmailExists(email)) {
+//            log.warn("Email already exists: {}", email);
+//            return -7;
+//        }
 
         String verificationToken = VerificationUtil.generateVerificationToken();
         String hashedPassword = PasswordUtil.hashPassword(password);

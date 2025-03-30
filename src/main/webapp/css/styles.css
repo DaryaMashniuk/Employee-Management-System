@@ -6,19 +6,57 @@ body {
     padding: 20px;
 }
 
-h1 {
-    text-align: center;
-    color: #343a40;
-    margin-top: 20px;
-}
-
 .container {
     max-width: 600px;
     margin: auto;
     background: white;
-    padding: 20px;
+    padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    color: #343a40;
+}
+
+h2 {
+    color: #495057;
+    margin-top: 20px;
+}
+
+.profile-info {
+    margin-top: 20px;
+}
+
+.profile-info p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.logout-button, .edit-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logout-button:hover, .edit-button:hover {
+    background-color: #218838;
+}
+
+h1 {
+    text-align: center;
+    color: #343a40;
+    margin-top: 20px;
 }
 
 form {
@@ -78,47 +116,6 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Стили для профиля */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.profile-info {
-    margin-top: 20px;
-}
-
-.profile-info p {
-    margin: 5px 0;
-}
-
-.logout-button {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.logout-button:hover {
-    background-color: #ff1a1a;
-}
-
-.edit-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-.edit-button:hover {
-    background-color: #45a049;
-}
 
 /* Стили для регистрации */
 .error-message {

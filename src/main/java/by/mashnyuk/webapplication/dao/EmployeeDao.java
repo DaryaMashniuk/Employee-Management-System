@@ -12,4 +12,5 @@ public interface EmployeeDao  {
     boolean isEmailExists(String email);
     boolean verifyEmail(String verificationToken);
     boolean checkIfEmailIsVerified(String username);
+    int editProfile(Employee employee);
 }
