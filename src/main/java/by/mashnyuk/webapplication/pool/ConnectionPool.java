@@ -54,7 +54,7 @@ public class ConnectionPool {
         LOGGER.info("🔄 Getting connection from pool...");
         Connection connection = null;
         try {
-            connection = freeConnections.poll(5, TimeUnit.SECONDS); // Wait for 5 seconds
+            connection = freeConnections.poll(5, TimeUnit.SECONDS);
             if (connection == null) {
                 LOGGER.error("⛔ Failed to get connection! All connections are busy.");
                 throw new RuntimeException("All connections are busy. Try again later.");

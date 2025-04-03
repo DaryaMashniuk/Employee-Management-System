@@ -7,8 +7,9 @@ public class Employee implements AbstractEntity {
     private String password;
     private String address;
     private String email;
+    private String avatarPath;
 
-    public Employee(String firstName, String lastName, String username, String password, String address, String email) {
+    public Employee(String firstName, String lastName, String username, String password, String address, String email, String avatarPath) {
 
         this.firstName = firstName;
         this.lastName = lastName;
@@ -16,7 +17,16 @@ public class Employee implements AbstractEntity {
         this.password = password;
         this.address = address;
         this.email = email;
+        this.avatarPath = avatarPath;
+    }
+    public Employee(String firstName, String lastName, String username, String address, String email, String avatarPath) {
 
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.address = address;
+        this.email = email;
+        this.avatarPath = avatarPath;
     }
     public Employee(String firstName, String lastName, String username, String address, String email) {
 
@@ -83,5 +93,12 @@ public class Employee implements AbstractEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAvatarPath() {
+        return avatarPath != null ? avatarPath : "images/default-avatar.png";
+    }
+    public void setAvatarPath(String avatarPath) {
+        this.avatarPath = avatarPath;
     }
 }

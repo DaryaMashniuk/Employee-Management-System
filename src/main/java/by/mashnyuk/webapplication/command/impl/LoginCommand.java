@@ -2,7 +2,9 @@ package by.mashnyuk.webapplication.command.impl;
 
 import by.mashnyuk.webapplication.command.Command;
 import by.mashnyuk.webapplication.entity.Employee;
+import by.mashnyuk.webapplication.service.AuthService;
 import by.mashnyuk.webapplication.service.EmployeeService;
+import by.mashnyuk.webapplication.service.impl.AuthServiceImpl;
 import by.mashnyuk.webapplication.service.impl.EmployeeServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
@@ -16,8 +18,9 @@ public class LoginCommand implements Command {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         EmployeeService employeeService = EmployeeServiceImpl.getInstance();
+        AuthService authService = AuthServiceImpl.getInstance();
         String page;
-        if ( employeeService.authenticate(username, password) ) {
+        if ( authService.authenticate(username, password) ) {
             logger.info("User logged in");
             request.getSession().setAttribute("username", username);
             Employee employee = employeeService.getEmployeeByUsername(username);
@@ -25,7 +28,7 @@ public class LoginCommand implements Command {
             page = "main.jsp";
         } else {
             request.setAttribute("login_msg","Invalid login or password");
-            page = "index.jsp";
+            page = "login.jsp";
         }
         return page;
     }

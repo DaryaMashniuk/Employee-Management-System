@@ -13,6 +13,6 @@
 </head>
 <body>
 <h1>Error: ${error}</h1>
-<a href="index.jsp">Go to login page</a>
+<a href="login.jsp">Go to login page</a>
 </body>
 </html>

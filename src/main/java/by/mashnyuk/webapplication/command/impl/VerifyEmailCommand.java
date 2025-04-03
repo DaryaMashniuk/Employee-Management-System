@@ -1,8 +1,8 @@
 package by.mashnyuk.webapplication.command.impl;
 
 import by.mashnyuk.webapplication.command.Command;
-import by.mashnyuk.webapplication.service.EmployeeService;
-import by.mashnyuk.webapplication.service.impl.EmployeeServiceImpl;
+import by.mashnyuk.webapplication.service.AuthService;
+import by.mashnyuk.webapplication.service.impl.AuthServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,12 +15,12 @@ public class VerifyEmailCommand implements Command {
         logger.info("VerifyEmailCommand");
         String verificationToken = request.getParameter("token");
 
-        EmployeeService employeeService = EmployeeServiceImpl.getInstance();
-        boolean isVerified = employeeService.verifyEmail(verificationToken);
+        AuthService authService = AuthServiceImpl.getInstance();
+        boolean isVerified = authService.verifyEmail(verificationToken);
 
         if (isVerified) {
             logger.info("Email verified successfully with token: {}", verificationToken);
-            return "index.jsp";
+            return "login.jsp";
         } else {
             logger.warn("Failed to verify email with token: {}", verificationToken);
             request.setAttribute("error", "Invalid verification token.");

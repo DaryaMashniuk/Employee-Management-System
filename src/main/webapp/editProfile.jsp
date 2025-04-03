@@ -13,6 +13,17 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <script>
+        document.getElementById('avatar').addEventListener('change', (e)=> {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e)=> {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        })
+    </script>
     <title>Edit Profile</title>
 </head>
 <body>
@@ -21,8 +32,14 @@
     <% if (request.getAttribute("generalError") != null) { %>
     <div class="error-message">${generalError}</div>
     <% } %>
-    <form action="controller" method="post">
+    <form action="controller" method="post" enctype="multipart/form-data">
         <input type="hidden" name="command" value="editProfile"/>
+        <label for="avatar">Profile picture</label>
+        <div class="avatar-upload">
+            <img id="avatarPreview" src="${employee.avatarPath} alt="Avatar Preview" class="avatar-preview">
+            <input type="file" id="avatar" name="avatar" accept="image/*" style="display: none;">
+            <button type="button" onclick="document.getElementById('avatar').click()">Change Avatar</button>
+        </div>
 
         <label for="firstName">First Name</label>
         <input type="text" id="firstName" name="firstName" value="<%= employee.getFirstName() %>" required/>

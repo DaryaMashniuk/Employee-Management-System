@@ -13,122 +13,19 @@ import java.util.List;
 
 public class EmployeeDaoImpl implements EmployeeDao {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String INSERT_SQL =
-            "INSERT INTO employee (first_name, last_name, username, password, address, email, verification_token) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String FIND_ALL_EMPLOYEES_SQL = "SELECT * FROM employee";
     private static final String FIND_BY_USERNAME_SQL =
-            "SELECT first_name, last_name, username, address, email FROM employee WHERE username = ?";
-    private static final String AUTH_SQL =
-            "SELECT password, is_verified FROM employee WHERE username = ?";
-    private static final String VERIFY_EMAIL_SQL =
-            "UPDATE employee SET is_verified = TRUE WHERE verification_token = ?";
-    private static final String CHECK_VERIFICATION_SQL =
-            "SELECT is_verified FROM employee WHERE username = ?";
-    private static final String CHECK_EMAIL_EXISTS_SQL =
-            "SELECT COUNT(*) FROM employee WHERE email = ?";
+            "SELECT first_name, last_name, username, address, email, avatar_path FROM employee WHERE username = ?";
     private static final String EDIT_PROFILE =
             "UPDATE employee SET first_name = ?, last_name = ?, address = ?, email = ? WHERE username = ?";
-
+    private static final String UPDATE_AVATAR_SQL =
+            "UPDATE employee SET avatar_path = ? WHERE username = ?";
     private static final EmployeeDaoImpl instance = new EmployeeDaoImpl();
     private EmployeeDaoImpl() {}
     public static EmployeeDaoImpl getInstance() {
         return instance;
     }
 
-    @Override
-    public boolean authenticate(String username, String password) {
-        LOGGER.info("Authenticating user: {}", username);
-        Connection connection = null;
-        try {
-            connection = ConnectionPool.getInstance().getConnection();
-            try (PreparedStatement stmt = connection.prepareStatement(AUTH_SQL)) {
-                stmt.setString(1, username);
-
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        if (!rs.getBoolean("is_verified")) {
-                            LOGGER.warn("User {} not verified", username);
-                            return false;
-                        }
-
-                        String storedHash = rs.getString("password");
-                        boolean match = PasswordUtil.checkPassword(password, storedHash);
-                        LOGGER.info("Password match for {}: {}", username, match);
-                        return match;
-                    }
-                    LOGGER.warn("User {} not found", username);
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Authentication error for user {}: {}", username, e.getMessage(), e);
-        } finally {
-            if (connection != null) {
-                ConnectionPool.getInstance().releaseConnection(connection);
-            }
-        }
-        return false;
-    }
-
-
-
-    @Override
-    public int register(Employee employee, String verificationToken) {
-        LOGGER.info("Registering employee: {}", employee.getUsername());
-        Connection connection = null;
-        try {
-            connection = ConnectionPool.getInstance().getConnection();
-            try (PreparedStatement stmt = connection.prepareStatement(INSERT_SQL)) {
-                stmt.setString(1, employee.getFirstName());
-                stmt.setString(2, employee.getLastName());
-                stmt.setString(3, employee.getUsername());
-                stmt.setString(4, employee.getPassword());
-                stmt.setString(5, employee.getAddress());
-                stmt.setString(6, employee.getEmail());
-                stmt.setString(7, verificationToken);
-
-                int result = stmt.executeUpdate();
-                if (result > 0) {
-                    LOGGER.info("Employee {} registered successfully", employee.getUsername());
-                } else {
-                    LOGGER.warn("Failed to register employee {}", employee.getUsername());
-                }
-                return result;
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Registration error for {}: {}", employee.getUsername(), e.getMessage(), e);
-            return 0;
-        } finally {
-            if (connection != null) {
-                ConnectionPool.getInstance().releaseConnection(connection);
-            }
-        }
-    }
-
-    @Override
-    public boolean checkIfEmailIsVerified(String username) {
-        LOGGER.info("Checking verification status for: {}", username);
-        Connection connection = null;
-        try {
-            connection = ConnectionPool.getInstance().getConnection();
-            try (PreparedStatement stmt = connection.prepareStatement(CHECK_VERIFICATION_SQL)) {
-                stmt.setString(1, username);
-
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getBoolean("is_verified");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Verification check error: {}", e.getMessage(), e);
-        } finally {
-            if (connection != null) {
-                ConnectionPool.getInstance().releaseConnection(connection);
-            }
-        }
-        return false;
-    }
 
     @Override
     public int editProfile(Employee employee) {
@@ -162,8 +59,30 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
+    public int updateAvatar(String username, String avatarPath) {
+        Connection connection = null;
+        try {
+            connection = ConnectionPool.getInstance().getConnection();
+            try(PreparedStatement statement = connection.prepareStatement(UPDATE_AVATAR_SQL)) {
+                LOGGER.info("Updating avatar for {}", username);
+                statement.setString(1, avatarPath);
+                statement.setString(2, username);
+                return statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+                LOGGER.error("Update error for {}: {}", username, e.getMessage(), e);
+        } finally {
+            if (connection != null) {
+                ConnectionPool.getInstance().releaseConnection(connection);
+            }
+        }
+        return 0;
+    }
+
+    @Override
     public Employee getEmployeeByUsername(String username) {
         LOGGER.info("Fetching employee by username: {}", username);
+        Employee employee = null;
         Connection connection = null;
         try {
             connection = ConnectionPool.getInstance().getConnection();
@@ -177,7 +96,8 @@ public class EmployeeDaoImpl implements EmployeeDao {
                             resultSet.getString("last_name"),
                             resultSet.getString("username"),
                             resultSet.getString("address"),
-                            resultSet.getString("email")
+                            resultSet.getString("email"),
+                            resultSet.getString("avatar_path")
                     );
                 }
             } catch (SQLException e) {
@@ -188,57 +108,9 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 ConnectionPool.getInstance().releaseConnection(connection);
             }
         }
-        return null;
+        return employee;
     }
 
-    @Override
-    public boolean isEmailExists(String email) {
-        LOGGER.info("Checking email existence: {}", email);
-        Connection connection = null;
-        try {
-            connection = ConnectionPool.getInstance().getConnection();
-            try (PreparedStatement stmt = connection.prepareStatement(CHECK_EMAIL_EXISTS_SQL)) {
-                stmt.setString(1, email);
-
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getInt(1) > 0;
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Email check error: {}", e.getMessage(), e);
-        } finally {
-            if (connection != null) {
-                ConnectionPool.getInstance().releaseConnection(connection);
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean verifyEmail(String verificationToken) {
-        LOGGER.info("Verifying email with token: {}", verificationToken);
-        Connection connection = null;
-        try {
-            connection = ConnectionPool.getInstance().getConnection();
-            try (PreparedStatement stmt = connection.prepareStatement(VERIFY_EMAIL_SQL)) {
-                stmt.setString(1, verificationToken);
-                int updated = stmt.executeUpdate();
-                boolean success = updated > 0;
-                LOGGER.info("Email verification {} for token {}",
-                        success ? "succeeded" : "failed", verificationToken);
-                return success;
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Email verification error: {}", e.getMessage(), e);
-            return false;
-        } finally {
-            if (connection != null) {
-                ConnectionPool.getInstance().releaseConnection(connection);
-            }
-        }
-    }
 
     @Override
     public List<Employee> getAllEmployees() {

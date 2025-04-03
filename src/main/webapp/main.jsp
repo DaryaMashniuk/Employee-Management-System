@@ -22,6 +22,10 @@
 
     <h2>Your Information</h2>
     <div class="profile-info">
+        <img id="avatarPreview"
+             src="${employee.avatarPath}"
+             alt="Avatar Preview"
+             class="avatar-preview">
         <p><strong>First Name:</strong> <%= employee.getFirstName() %></p>
         <p><strong>Last Name:</strong> <%= employee.getLastName() %></p>
         <p><strong>Username:</strong> <%= employee.getUsername() %></p>
