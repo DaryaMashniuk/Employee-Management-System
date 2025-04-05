@@ -8,7 +8,9 @@ public enum CommandType {
     LOGOUT(new LogoutCommand()),
     VERIFY(new VerifyEmailCommand()),
     DEFAULT(new DefaultCommand()),
-    EDITPROFILE(new EditProfileCommand());
+    PROFILE(new ProfileCommand()),
+    EDITPROFILE(new EditProfileCommand()),
+    GET_AVATAR(new GetAvatarCommand());
 
     Command command;
     CommandType(Command command) {

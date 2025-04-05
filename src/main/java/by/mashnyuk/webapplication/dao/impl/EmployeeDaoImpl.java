@@ -1,9 +1,9 @@
 package by.mashnyuk.webapplication.dao.impl;
 
 import by.mashnyuk.webapplication.dao.EmployeeDao;
-import by.mashnyuk.webapplication.entity.Employee;
+import by.mashnyuk.webapplication.dto.EmployeeDto;
+import by.mashnyuk.webapplication.dto.impl.EmployeeDtoImpl;
 import by.mashnyuk.webapplication.pool.ConnectionPool;
-import by.mashnyuk.webapplication.util.PasswordUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,11 +15,13 @@ public class EmployeeDaoImpl implements EmployeeDao {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String FIND_ALL_EMPLOYEES_SQL = "SELECT * FROM employee";
     private static final String FIND_BY_USERNAME_SQL =
-            "SELECT first_name, last_name, username, address, email, avatar_path FROM employee WHERE username = ?";
+            "SELECT first_name, last_name, username, address, email, avatar FROM employee WHERE username = ?";
     private static final String EDIT_PROFILE =
             "UPDATE employee SET first_name = ?, last_name = ?, address = ?, email = ? WHERE username = ?";
     private static final String UPDATE_AVATAR_SQL =
-            "UPDATE employee SET avatar_path = ? WHERE username = ?";
+            "UPDATE employee SET avatar = ? WHERE username = ?";
+    private static final String GET_AVATAR_SQL =
+            "SELECT avatar FROM employee WHERE username = ?";
     private static final EmployeeDaoImpl instance = new EmployeeDaoImpl();
     private EmployeeDaoImpl() {}
     public static EmployeeDaoImpl getInstance() {
@@ -28,29 +30,27 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 
     @Override
-    public int editProfile(Employee employee) {
-        LOGGER.info("Editing employee: {}", employee.getUsername());
+    public void editProfile(EmployeeDto employeeDto) {
+        LOGGER.info("Editing employee: {}", employeeDto.getUsername());
         Connection connection = null;
         try {
             connection = ConnectionPool.getInstance().getConnection();
             try (PreparedStatement stmt = connection.prepareStatement(EDIT_PROFILE)) {
-                stmt.setString(1, employee.getFirstName());
-                stmt.setString(2, employee.getLastName());
-                stmt.setString(3, employee.getAddress());
-                stmt.setString(4, employee.getEmail());
-                stmt.setString(5, employee.getUsername());
+                stmt.setString(1, employeeDto.getFirstName());
+                stmt.setString(2, employeeDto.getLastName());
+                stmt.setString(3, employeeDto.getAddress());
+                stmt.setString(4, employeeDto.getEmail());
+                stmt.setString(5, employeeDto.getUsername());
 
                 int result = stmt.executeUpdate();
                 if (result > 0) {
-                    LOGGER.info("Employee {} updated successfully", employee.getUsername());
+                    LOGGER.info("Employee {} updated successfully", employeeDto.getUsername());
                 } else {
-                    LOGGER.warn("Failed to update employee {}", employee.getUsername());
+                    LOGGER.warn("Failed to update employee {}", employeeDto.getUsername());
                 }
-                return result;
             }
         } catch (SQLException e) {
-            LOGGER.error("Update error for {}: {}", employee.getUsername(), e.getMessage(), e);
-            return 0;
+            LOGGER.error("Update error for {}: {}", employeeDto.getUsername(), e.getMessage(), e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
@@ -59,62 +59,71 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public int updateAvatar(String username, String avatarPath) {
-        Connection connection = null;
-        try {
-            connection = ConnectionPool.getInstance().getConnection();
-            try(PreparedStatement statement = connection.prepareStatement(UPDATE_AVATAR_SQL)) {
-                LOGGER.info("Updating avatar for {}", username);
-                statement.setString(1, avatarPath);
-                statement.setString(2, username);
-                return statement.executeUpdate();
-            }
+    public boolean updateEmployeeAvatar(String username, byte[] avatarData) {
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement stmt = connection.prepareStatement(UPDATE_AVATAR_SQL)) {
+
+            stmt.setBytes(1, avatarData);
+            stmt.setString(2, username);
+
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-                LOGGER.error("Update error for {}: {}", username, e.getMessage(), e);
-        } finally {
-            if (connection != null) {
-                ConnectionPool.getInstance().releaseConnection(connection);
-            }
+            LOGGER.error("Error updating avatar for {}: {}", username, e.getMessage());
+            return false;
         }
-        return 0;
     }
 
     @Override
-    public Employee getEmployeeByUsername(String username) {
+    public byte[] getEmployeeAvatar(String username) {
+        try (Connection connection = ConnectionPool.getInstance().getConnection();
+             PreparedStatement stmt = connection.prepareStatement(GET_AVATAR_SQL)) {
+
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getBytes("avatar");
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Error getting avatar for {}: {}", username, e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public EmployeeDto getEmployeeByUsername(String username) {
         LOGGER.info("Fetching employee by username: {}", username);
-        Employee employee = null;
         Connection connection = null;
         try {
             connection = ConnectionPool.getInstance().getConnection();
-            try(PreparedStatement statement = connection.prepareStatement(FIND_BY_USERNAME_SQL))  {
-
+            try(PreparedStatement statement = connection.prepareStatement(FIND_BY_USERNAME_SQL)) {
                 statement.setString(1, username);
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()){
-                    return new Employee(
-                            resultSet.getString("first_name"),
-                            resultSet.getString("last_name"),
-                            resultSet.getString("username"),
-                            resultSet.getString("address"),
-                            resultSet.getString("email"),
-                            resultSet.getString("avatar_path")
-                    );
+                    return EmployeeDtoImpl.builder()
+                            .firstName(resultSet.getString("first_name"))
+                            .lastName(resultSet.getString("last_name"))
+                            .username(resultSet.getString("username"))
+                            .address(resultSet.getString("address"))
+                            .email(resultSet.getString("email"))
+                            .avatar(resultSet.getBytes("avatar"))
+                            .build();
                 }
-            } catch (SQLException e) {
-                LOGGER.error("Error fetching employee by username {}: {}", username, e.getMessage(), e);
             }
-        }finally {
+        } catch (SQLException e) {
+            LOGGER.error("Error fetching employee by username {}: {}", username, e.getMessage(), e);
+        } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
             }
         }
-        return employee;
+        return null;
     }
 
 
     @Override
-    public List<Employee> getAllEmployees() {
-        List<Employee> employees = new ArrayList<>();
+    public List<EmployeeDto> getAllEmployees() {
+        List<EmployeeDto> employees = new ArrayList<>();
         Connection connection = null;
         try {
             connection = ConnectionPool.getInstance().getConnection();
@@ -122,13 +131,13 @@ public class EmployeeDaoImpl implements EmployeeDao {
                  ResultSet resultSet = statement.executeQuery()) {
 
                 while (resultSet.next()) {
-                    Employee employee = new Employee(
-                            resultSet.getString("first_name"),
-                            resultSet.getString("last_name"),
-                            resultSet.getString("username"),
-                            resultSet.getString("address"),
-                            resultSet.getString("email")
-                    );
+                    EmployeeDto employee = EmployeeDtoImpl.builder()
+                            .firstName(resultSet.getString("first_name"))
+                            .lastName(resultSet.getString("last_name"))
+                            .username(resultSet.getString("username"))
+                            .address(resultSet.getString("address"))
+                            .email(resultSet.getString("email"))
+                            .build();
                     employees.add(employee);
                 }
                 LOGGER.info("Loaded {} employees from database", employees.size());

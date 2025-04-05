@@ -6,24 +6,17 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="by.mashnyuk.webapplication.entity.Employee" %>
+<%@ page import="by.mashnyuk.webapplication.dto.EmployeeDto" %>
 <%
-    Employee employee = (Employee) request.getAttribute("employee");
+    EmployeeDto employee = (EmployeeDto) session.getAttribute("employee");
+    if (employee == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
 %>
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="css/styles.css">
-    <script>
-        document.getElementById('avatar').addEventListener('change', (e)=> {
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e)=> {
-                    document.getElementById('avatarPreview').src = e.target.result;
-                }
-                reader.readAsDataURL(this.files[0]);
-            }
-        })
-    </script>
     <title>Edit Profile</title>
 </head>
 <body>
@@ -36,7 +29,7 @@
         <input type="hidden" name="command" value="editProfile"/>
         <label for="avatar">Profile picture</label>
         <div class="avatar-upload">
-            <img id="avatarPreview" src="${employee.avatarPath} alt="Avatar Preview" class="avatar-preview">
+            <img id="avatarPreview" src="${pageContext.request.contextPath}/controller?command=get_avatar&username=<%= employee.getUsername() %>" alt="Avatar Preview" class="avatar-preview">
             <input type="file" id="avatar" name="avatar" accept="image/*" style="display: none;">
             <button type="button" onclick="document.getElementById('avatar').click()">Change Avatar</button>
         </div>
@@ -75,5 +68,31 @@
     </form>
     <a href="main.jsp" class="back-link">Back to Profile</a>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Script")
+        const avatarInput = document.getElementById('avatar');
+        if (avatarInput) {
+            avatarInput.addEventListener('change', function() {
+                if (!this.files || !this.files[0]) return;
+
+                // Проверка размера файла (2MB)
+                if (this.files[0].size > 2 * 1024 * 1024) {
+                    alert('File is too large! Max size is 2MB.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                };
+                reader.onerror = function() {
+                    console.error('Error reading file');
+                };
+                reader.readAsDataURL(this.files[0]);
+            });
+        }
+    });
+</script>
 </body>
 </html>

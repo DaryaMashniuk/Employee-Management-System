@@ -1,6 +1,8 @@
 package by.mashnyuk.webapplication.dao.impl;
 
 import by.mashnyuk.webapplication.dao.AuthDao;
+import by.mashnyuk.webapplication.dto.EmployeeDto;
+import by.mashnyuk.webapplication.dto.impl.EmployeeDtoImpl;
 import by.mashnyuk.webapplication.entity.Employee;
 import by.mashnyuk.webapplication.pool.ConnectionPool;
 import by.mashnyuk.webapplication.util.PasswordUtil;
@@ -58,30 +60,31 @@ public class AuthDaoImpl implements AuthDao {
     }
 
     @Override
-    public int register(Employee employee, String verificationToken) {
-        LOGGER.info("Registering employee: {}", employee.getUsername());
+    public int register(EmployeeDtoImpl employeeDto, String verificationToken) {
+        LOGGER.info("Registering employee: {}", employeeDto.getUsername());
         Connection connection = null;
         try {
             connection = ConnectionPool.getInstance().getConnection();
             try (PreparedStatement stmt = connection.prepareStatement(INSERT_SQL)) {
-                stmt.setString(1, employee.getFirstName());
-                stmt.setString(2, employee.getLastName());
-                stmt.setString(3, employee.getUsername());
-                stmt.setString(4, employee.getPassword());
-                stmt.setString(5, employee.getAddress());
-                stmt.setString(6, employee.getEmail());
+                stmt.setString(1, employeeDto.getFirstName());
+                stmt.setString(2, employeeDto.getLastName());
+                stmt.setString(3, employeeDto.getUsername());
+                stmt.setString(4, employeeDto.getPassword());
+                stmt.setString(5, employeeDto.getAddress());
+                stmt.setString(6, employeeDto.getEmail());
                 stmt.setString(7, verificationToken);
 
                 int result = stmt.executeUpdate();
                 if (result > 0) {
-                    LOGGER.info("Employee {} registered successfully", employee.getUsername());
+                    LOGGER.info("Employee {} registered successfully", employeeDto.getUsername());
                 } else {
-                    LOGGER.warn("Failed to register employee {}", employee.getUsername());
+                    LOGGER.warn("Failed to register employee {}", employeeDto.getUsername());
                 }
                 return result;
             }
         } catch (SQLException e) {
-            LOGGER.error("Registration error for {}: {}", employee.getUsername(), e.getMessage(), e);
+            LOGGER.info(employeeDto.getAddress());
+            LOGGER.error("Registration error for {}: {}", employeeDto.getUsername(), e.getMessage(), e);
             return 0;
         } finally {
             if (connection != null) {

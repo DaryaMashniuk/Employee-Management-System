@@ -1,8 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="by.mashnyuk.webapplication.entity.Employee" %>
+<%@ page import="by.mashnyuk.webapplication.dto.EmployeeDto" %>
 <%
-    Employee employee = (Employee) request.getAttribute("employee");
+    EmployeeDto employee = (EmployeeDto) session.getAttribute("employee");
+    if (employee == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
 %>
 
 <html>
@@ -23,7 +27,7 @@
     <h2>Your Information</h2>
     <div class="profile-info">
         <img id="avatarPreview"
-             src="${employee.avatarPath}"
+             src="${pageContext.request.contextPath}/controller?command=get_avatar&username=${employee.username}"
              alt="Avatar Preview"
              class="avatar-preview">
         <p><strong>First Name:</strong> <%= employee.getFirstName() %></p>

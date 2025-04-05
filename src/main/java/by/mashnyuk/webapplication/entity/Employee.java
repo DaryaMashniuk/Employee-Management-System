@@ -1,56 +1,34 @@
 package by.mashnyuk.webapplication.entity;
 
+import by.mashnyuk.webapplication.dto.EmployeeDto;
+import by.mashnyuk.webapplication.dto.impl.EmployeeDtoImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Employee implements AbstractEntity {
+    private static final Logger logger = LogManager.getLogger();
     private String firstName;
     private String lastName;
     private String username;
     private String password;
     private String address;
     private String email;
-    private String avatarPath;
+    private byte[] avatar;
 
-    public Employee(String firstName, String lastName, String username, String password, String address, String email, String avatarPath) {
-
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.password = password;
-        this.address = address;
-        this.email = email;
-        this.avatarPath = avatarPath;
-    }
-    public Employee(String firstName, String lastName, String username, String address, String email, String avatarPath) {
-
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.address = address;
-        this.email = email;
-        this.avatarPath = avatarPath;
-    }
-    public Employee(String firstName, String lastName, String username, String address, String email) {
-
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.address = address;
-        this.email = email;
-
-    }
-
-    public Employee(String firstName, String lastName, String address, String email) {
-
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.address = address;
-        this.email = email;
-
+    public Employee(EmployeeDtoImpl dto) {
+        logger.info("Creating Employee from DTO");
+        this.firstName = dto.getFirstName();
+        this.lastName = dto.getLastName();
+        this.username = dto.getUsername();
+        this.password = dto.getPassword();
+        this.address = dto.getAddress();
+        this.email = dto.getEmail();
+        this.avatar = dto.getAvatar();
     }
 
     public String getFirstName() {
         return firstName;
     }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -58,7 +36,6 @@ public class Employee implements AbstractEntity {
     public String getLastName() {
         return lastName;
     }
-
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
@@ -66,7 +43,6 @@ public class Employee implements AbstractEntity {
     public String getUsername() {
         return username;
     }
-
     public void setUsername(String username) {
         this.username = username;
     }
@@ -74,7 +50,6 @@ public class Employee implements AbstractEntity {
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -82,7 +57,6 @@ public class Employee implements AbstractEntity {
     public String getAddress() {
         return address;
     }
-
     public void setAddress(String address) {
         this.address = address;
     }
@@ -90,15 +64,14 @@ public class Employee implements AbstractEntity {
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getAvatarPath() {
-        return avatarPath != null ? avatarPath : "images/default-avatar.png";
+    public byte[] getAvatar() {
+        return avatar;
     }
-    public void setAvatarPath(String avatarPath) {
-        this.avatarPath = avatarPath;
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
     }
 }

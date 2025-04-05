@@ -1,5 +1,8 @@
 package by.mashnyuk.webapplication.util;
 
+import jakarta.servlet.http.Part;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -10,6 +13,7 @@ public class ValidationUtil {
     private static final Pattern NAME_PATTERN = Pattern.compile("^[A-ZА-ЯЁ][a-zа-яё]{1,30}$");
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$");
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d).{8,}$");
+    private static final int MAX_FILE_SIZE = 2 * 1024 * 1024;
 
     public static Map<String, String> validateRegistration(String firstName, String lastName,
                                                            String username, String password,
@@ -26,6 +30,17 @@ public class ValidationUtil {
         return errors;
     }
 
+    public static void validateAvatarFile(Part filePart) throws IOException {
+        if (filePart == null || filePart.getSize() == 0) {
+            throw new IOException("Файл аватара пустой");
+        }
+        if (filePart.getSize() > MAX_FILE_SIZE) {
+            throw new IOException("Файл слишком большой (максимум 2MB)");
+        }
+        if (!filePart.getContentType().startsWith("image/")) {
+            throw new IOException("Допустимы только изображения");
+        }
+    }
     public static Map<String, String> validateProfileUpdate(String firstName, String lastName,
                                                             String address, String email) {
         Map<String, String> errors = new HashMap<>();

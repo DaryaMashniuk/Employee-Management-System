@@ -1,5 +1,7 @@
 package by.mashnyuk.webapplication.dao;
 
+import by.mashnyuk.webapplication.dto.EmployeeDto;
+import by.mashnyuk.webapplication.dto.impl.EmployeeDtoImpl;
 import by.mashnyuk.webapplication.entity.Employee;
 
 public interface AuthDao {
@@ -7,6 +9,6 @@ public interface AuthDao {
     boolean verifyEmail(String verificationToken);
     boolean checkIfEmailIsVerified(String username);
     boolean authenticate(String username, String password);
-    int register(Employee employee, String verificationToken);
+    int register(EmployeeDtoImpl employeeDto, String verificationToken);
 
 }

@@ -31,8 +31,17 @@ public class Controller extends HttpServlet {
             String commandStr = request.getParameter("command");
             log.info("Received GET command: " + commandStr);
             Command command = CommandType.define(commandStr);
-            String page = command.execute(request);
-            request.getRequestDispatcher(page).forward(request,response);
+            String page = command.execute(request,response);
+            if (page == null) {
+                return;
+            }
+
+            if (page.startsWith("redirect:")) {
+                String redirectPath = page.substring("redirect:".length());
+                response.sendRedirect(redirectPath);
+            } else {
+                request.getRequestDispatcher(page).forward(request, response);
+            }
         } catch (Exception e) {
             log.error("Error in GET request", e);
             response.sendRedirect("error.jsp");
@@ -46,8 +55,13 @@ public class Controller extends HttpServlet {
             String commandStr = request.getParameter("command");
             log.info("Received command: " + commandStr);
             Command command = CommandType.define(commandStr);
-            String page = command.execute(request);
-            request.getRequestDispatcher(page).forward(request, response);
+            String page = command.execute(request,response);
+            if (page != null && page.startsWith("redirect:")) {
+                String redirectPath = page.substring("redirect:".length());
+                response.sendRedirect(redirectPath);
+            } else {
+                request.getRequestDispatcher(page).forward(request, response);
+            }
         } catch (Exception e) {
             log.error("Error in Controller", e);
             response.sendRedirect("error.jsp");

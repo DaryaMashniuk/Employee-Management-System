@@ -1,13 +1,17 @@
 package by.mashnyuk.webapplication.service;
 
+import by.mashnyuk.webapplication.dto.EmployeeDto;
 import by.mashnyuk.webapplication.entity.Employee;
+import jakarta.servlet.http.Part;
 
 import java.util.List;
 import java.util.Map;
 
 public interface EmployeeService {
-    List<Employee> getAllEmployees();
-    Employee getEmployeeByUsername(String username);
-    int editProfile(String firstName, String lastName, String username, String address, String email);
-    int updateAvatar(String username, String avatarPath);
+    List<EmployeeDto> getAllEmployees();
+    EmployeeDto getEmployeeByUsername(String username);
+    Map<String,String> editProfile(EmployeeDto employeeDto);
+//    String updateEmployeeAvatar(Part filePart, String username, String appPath);
+    boolean updateEmployeeAvatar(String username, Part filePart);
+    byte[] getEmployeeAvatar(String username);
 }

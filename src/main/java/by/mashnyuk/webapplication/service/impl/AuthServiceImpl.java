@@ -2,14 +2,17 @@ package by.mashnyuk.webapplication.service.impl;
 
 import by.mashnyuk.webapplication.dao.AuthDao;
 import by.mashnyuk.webapplication.dao.impl.AuthDaoImpl;
+import by.mashnyuk.webapplication.dto.impl.EmployeeDtoImpl;
 import by.mashnyuk.webapplication.entity.Employee;
 import by.mashnyuk.webapplication.service.AuthService;
 import by.mashnyuk.webapplication.util.EmailUtil;
 import by.mashnyuk.webapplication.util.PasswordUtil;
+import by.mashnyuk.webapplication.util.ValidationUtil;
 import by.mashnyuk.webapplication.util.VerificationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Base64;
+import java.util.Map;
 
 public class AuthServiceImpl implements AuthService {
     private static final Logger log = LogManager.getLogger();
@@ -44,28 +47,28 @@ public class AuthServiceImpl implements AuthService {
         return authDao.verifyEmail(verificationToken);
     }
 
-
     @Override
-    public int register(String firstName, String lastName, String username, String password, String address, String email) {
-        log.info("Validating registration data for user: {}", username);
-
+    public Map<String, String> register(EmployeeDtoImpl employeeDto) {
+        log.info("Validating registration data for user: {}", employeeDto.getUsername());
+        Map<String, String> errors = ValidationUtil.validateRegistration(
+                        employeeDto.getFirstName(), employeeDto.getLastName(), employeeDto.getUsername(), employeeDto.getPassword(), employeeDto.getAddress(), employeeDto.getEmail());
 //        if (isEmailExists(email)) {
 //            log.warn("Email already exists: {}", email);
 //            return -7;
 //        }
 
-        String verificationToken = VerificationUtil.generateVerificationToken();
-        String hashedPassword = PasswordUtil.hashPassword(password);
-
-        Employee employee = new Employee(firstName, lastName, username, hashedPassword, address, email);
-        int result = authDao.register(employee, verificationToken);
-
-        if (result > 0) {
-            String verificationLink = verificationEmailAddress + verificationToken;
-            String encodedEmail = Base64.getEncoder().encodeToString(email.getBytes());
-            verificationLink += "&email=" + encodedEmail;
-            EmailUtil.sendVerificationEmail(email, verificationLink);
+        if (!errors.isEmpty()) {
+            return errors;
+        } else {
+            String verificationToken = VerificationUtil.generateVerificationToken();
+            int result = authDao.register(employeeDto, verificationToken);
+            if (result > 0) {
+                String verificationLink = verificationEmailAddress + verificationToken;
+                String encodedEmail = Base64.getEncoder().encodeToString(employeeDto.getEmail().getBytes());
+                verificationLink += "&email=" + encodedEmail;
+                EmailUtil.sendVerificationEmail(employeeDto.getEmail(), verificationLink);
+            }
+            return errors;
         }
-        return result;
     }
 }
