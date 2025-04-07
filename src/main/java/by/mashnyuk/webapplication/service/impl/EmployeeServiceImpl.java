@@ -3,11 +3,9 @@ package by.mashnyuk.webapplication.service.impl;
 import by.mashnyuk.webapplication.dao.EmployeeDao;
 import by.mashnyuk.webapplication.dao.impl.EmployeeDaoImpl;
 import by.mashnyuk.webapplication.dto.EmployeeDto;
-import by.mashnyuk.webapplication.entity.Employee;
 import by.mashnyuk.webapplication.service.EmployeeService;
 import by.mashnyuk.webapplication.util.ImageCompressor;
 import by.mashnyuk.webapplication.util.ValidationUtil;
-import by.mashnyuk.webapplication.util.AvatarUploadUtil;
 import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,19 +58,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     public byte[] getEmployeeAvatar(String username) {
         return employeeDao.getEmployeeAvatar(username);
     }
-//    @Override
-//    public String updateEmployeeAvatar(Part filePart, String username, String appPath) {
-//        String currentAvatarPath = employeeDao.getEmployeeAvatarPath(username);
-//        String newAvatarPath = null;
-//        try {
-//            newAvatarPath = AvatarUploadUtil.uploadAvatar(filePart, username, appPath, currentAvatarPath);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        employeeDao.updateEmployeeAvatar(username, newAvatarPath);
-//        return newAvatarPath;
-//    }
 
     @Override
     public List<EmployeeDto> getAllEmployees() {

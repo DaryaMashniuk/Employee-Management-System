@@ -60,23 +60,33 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     @Override
     public boolean updateEmployeeAvatar(String username, byte[] avatarData) {
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement stmt = connection.prepareStatement(UPDATE_AVATAR_SQL)) {
+        Connection connection = null;
+        try{
+            connection = ConnectionPool.getInstance().getConnection();
+        try (PreparedStatement stmt = connection.prepareStatement(UPDATE_AVATAR_SQL)) {
 
             stmt.setBytes(1, avatarData);
             stmt.setString(2, username);
 
             return stmt.executeUpdate() > 0;
+            }
         } catch (SQLException e) {
             LOGGER.error("Error updating avatar for {}: {}", username, e.getMessage());
             return false;
+        } finally {
+            if (connection != null) {
+                ConnectionPool.getInstance().releaseConnection(connection);
+            }
         }
     }
 
     @Override
     public byte[] getEmployeeAvatar(String username) {
-        try (Connection connection = ConnectionPool.getInstance().getConnection();
-             PreparedStatement stmt = connection.prepareStatement(GET_AVATAR_SQL)) {
+        Connection connection = null;
+        try{
+            connection = ConnectionPool.getInstance().getConnection();
+
+        try (PreparedStatement stmt = connection.prepareStatement(GET_AVATAR_SQL)) {
 
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -84,9 +94,14 @@ public class EmployeeDaoImpl implements EmployeeDao {
             if (rs.next()) {
                 return rs.getBytes("avatar");
             }
+            }
         } catch (SQLException e) {
             LOGGER.error("Error getting avatar for {}: {}", username, e.getMessage());
+        }  finally {
+        if (connection != null) {
+            ConnectionPool.getInstance().releaseConnection(connection);
         }
+    }
         return null;
     }
 

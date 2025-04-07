@@ -30,8 +30,9 @@ public class GetAvatarCommand implements Command {
                 response.setContentLength(avatarData.length);
                 response.getOutputStream().write(avatarData);
             } else {
-                // Перенаправление на дефолтную аватарку
-                response.sendRedirect(request.getContextPath() + "/images/default-avatar.jpg");
+                logger.info(request.getContextPath()+ "/images/default-avatar.png");
+                response.sendRedirect(request.getContextPath()+ "/images/default-avatar.png");
+
             }
         } catch (IOException e) {
             logger.error("Error serving avatar for {}", username, e);

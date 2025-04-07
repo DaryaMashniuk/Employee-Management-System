@@ -14,7 +14,7 @@ public class ImageCompressor {
     public static byte[] compressImage(byte[] originalData) throws IOException {
         BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(originalData));
 
-        // Calculate new dimensions maintaining aspect ratio
+
         int newWidth = originalImage.getWidth();
         int newHeight = originalImage.getHeight();
 
@@ -25,7 +25,6 @@ public class ImageCompressor {
             newHeight = (int) (newHeight * ratio);
         }
 
-        // Create compressed image
         BufferedImage compressedImage = new BufferedImage(newWidth, newHeight,
                 originalImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImage.getType());
 
@@ -33,7 +32,6 @@ public class ImageCompressor {
                 originalImage.getScaledInstance(newWidth, newHeight, java.awt.Image.SCALE_SMOOTH),
                 0, 0, null);
 
-        // Write to byte array
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(compressedImage, "jpg", baos);
 
