@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
 <%@ page import="by.mashnyuk.webapplication.dto.EmployeeDto" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+
 <%
     EmployeeDto employee = (EmployeeDto) session.getAttribute("employee");
     if (employee == null) {
@@ -37,10 +38,15 @@
         <p><strong>Contact:</strong> <%= employee.getEmail() %></p>
     </div>
 
+
     <div class="action-buttons">
         <form action="controller" method="get" class="logout-form">
             <input type="hidden" name="command" value="editProfile"/>
             <button type="submit" class="edit-button">Edit Profile</button>
+        </form>
+        <form action="controller" method="get" class="logout-form">
+            <input type="hidden" name="command" value="show_files"/>
+            <button type="submit" class="showFiles-button">Employee files</button>
         </form>
     </div>
 </div>

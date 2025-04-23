@@ -4,6 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface Command {
-    String execute(HttpServletRequest requestб, HttpServletResponse response);
+    String execute(HttpServletRequest request, HttpServletResponse response);
 //    void refresh();
 }

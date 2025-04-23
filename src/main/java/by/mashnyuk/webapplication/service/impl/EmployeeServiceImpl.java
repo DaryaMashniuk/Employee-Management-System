@@ -26,19 +26,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Map<String,String> editProfile(EmployeeDto employeeDto) {
-        log.info("Editing profile data for user: {}", employeeDto.getUsername());
-        Map<String, String> errors = ValidationUtil.validateProfileUpdate(
-                employeeDto.getFirstName(), employeeDto.getLastName(), employeeDto.getAddress(), employeeDto.getEmail());
-
-        if(!errors.isEmpty()) {
-            return errors;
-        } else {
-            employeeDao.editProfile(employeeDto);
-            return errors;
-        }
-    }
-    @Override
     public boolean updateEmployeeAvatar(String username, Part filePart) {
         if (filePart == null || filePart.getSize() == 0) {
             return false;
@@ -54,9 +41,30 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
+
+    @Override
+    public Map<String,String> editProfile(EmployeeDto employeeDto) {
+        log.info("Editing profile data for user: {}", employeeDto.getUsername());
+        Map<String, String> errors = ValidationUtil.validateProfileUpdate(
+                employeeDto.getFirstName(), employeeDto.getLastName(),
+                employeeDto.getAddress(), employeeDto.getEmail());
+
+        if(!errors.isEmpty()) {
+            return errors;
+        } else {
+            employeeDao.editProfile(employeeDto);
+            return errors;
+        }
+    }
+
     @Override
     public byte[] getEmployeeAvatar(String username) {
         return employeeDao.getEmployeeAvatar(username);
+    }
+
+    @Override
+    public EmployeeDto getEmployeeById(int id) {
+        return employeeDao.getEmployeeById(id);
     }
 
     @Override

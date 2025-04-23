@@ -70,7 +70,7 @@ public class Controller extends HttpServlet {
 
     @Override
     public void destroy() {
-        ConnectionPool.getInstance().closeAllConnections();
+        ConnectionPool.getInstance().shutdown();
         System.out.println("🔴 Все соединения закрыты перед завершением работы.");
     }
 }

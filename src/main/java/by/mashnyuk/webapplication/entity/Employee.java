@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Employee implements AbstractEntity {
     private static final Logger logger = LogManager.getLogger();
+    private int id;
     private String firstName;
     private String lastName;
     private String username;
@@ -17,6 +18,7 @@ public class Employee implements AbstractEntity {
 
     public Employee(EmployeeDtoImpl dto) {
         logger.info("Creating Employee from DTO");
+        this.id = dto.getId();
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
         this.username = dto.getUsername();
@@ -26,6 +28,13 @@ public class Employee implements AbstractEntity {
         this.avatar = dto.getAvatar();
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public String getFirstName() {
         return firstName;
     }

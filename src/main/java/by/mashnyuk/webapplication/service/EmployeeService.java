@@ -11,7 +11,7 @@ public interface EmployeeService {
     List<EmployeeDto> getAllEmployees();
     EmployeeDto getEmployeeByUsername(String username);
     Map<String,String> editProfile(EmployeeDto employeeDto);
-//    String updateEmployeeAvatar(Part filePart, String username, String appPath);
     boolean updateEmployeeAvatar(String username, Part filePart);
     byte[] getEmployeeAvatar(String username);
+    EmployeeDto getEmployeeById(int id);
 }

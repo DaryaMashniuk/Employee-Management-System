@@ -5,6 +5,7 @@ import org.apache.logging.log4j.core.config.plugins.validation.constraints.NotBl
 
 
 public class EmployeeDtoImpl implements EmployeeDto {
+    private int id;
     private String firstName;
     private String lastName;
     private String username;
@@ -21,6 +22,11 @@ public class EmployeeDtoImpl implements EmployeeDto {
 
     public static class Builder{
         private final EmployeeDtoImpl dto = new EmployeeDtoImpl();
+
+        public Builder id(int id) {
+            dto.id = id;
+            return this;
+        }
 
         public Builder firstName(String firstName) {
             dto.firstName = firstName;
@@ -57,11 +63,12 @@ public class EmployeeDtoImpl implements EmployeeDto {
             return this;
         }
 
+
         public EmployeeDtoImpl build() {
             return dto;
         }
     }
-
+    @Override public int getId() { return id; }
     @Override public String getFirstName() { return firstName; }
     @Override public String getLastName() { return lastName; }
     @Override public String getUsername() { return username; }
@@ -72,4 +79,5 @@ public class EmployeeDtoImpl implements EmployeeDto {
     public byte[] getAvatar() {
         return avatar;
     }
+
 }

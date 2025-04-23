@@ -5,6 +5,7 @@ import by.mashnyuk.webapplication.dto.EmployeeDto;
 import by.mashnyuk.webapplication.dto.impl.EmployeeDtoImpl;
 import by.mashnyuk.webapplication.service.EmployeeService;
 import by.mashnyuk.webapplication.service.impl.EmployeeServiceImpl;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -34,12 +35,16 @@ public class EditProfileCommand implements Command {
     }
 
     private String handleGet(HttpServletRequest request, HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        EmployeeDto employee = employeeService.getEmployeeByUsername(username);
+        request.setAttribute("employee", employee);
         return "editProfile.jsp";
     }
 
     private String handlePost(HttpServletRequest request, HttpSession session) {
         String username = (String) session.getAttribute("username");
 
+        // Создаем DTO с обновленными данными, включая описание
         EmployeeDto employeeDto = EmployeeDtoImpl.builder()
                 .firstName(request.getParameter("firstName"))
                 .lastName(request.getParameter("lastName"))
@@ -48,6 +53,7 @@ public class EditProfileCommand implements Command {
                 .email(request.getParameter("email"))
                 .build();
 
+        // Проверяем валидность данных и обновляем профиль
         Map<String, String> errors = employeeService.editProfile(employeeDto);
 
         try {
@@ -56,15 +62,18 @@ public class EditProfileCommand implements Command {
                 employeeService.updateEmployeeAvatar(username, filePart);
             }
         } catch (Exception e) {
-            logger.error("Error uploading avatar", e);
             request.setAttribute("avatarError", "Error uploading avatar");
         }
 
         if (!errors.isEmpty()) {
             errors.forEach(request::setAttribute);
+            request.setAttribute("employee", employeeDto);
             return "editProfile.jsp";
         }
 
-        return "redirect:main.jsp";
+        EmployeeDto updatedEmployee = employeeService.getEmployeeByUsername(username);
+        session.setAttribute("employee", updatedEmployee);
+
+        return "redirect:controller?command=profile";
     }
 }

@@ -10,7 +10,11 @@ public enum CommandType {
     DEFAULT(new DefaultCommand()),
     PROFILE(new ProfileCommand()),
     EDITPROFILE(new EditProfileCommand()),
-    GET_AVATAR(new GetAvatarCommand());
+    GET_AVATAR(new GetAvatarCommand()),
+    UPLOAD_FILE(new UploadFileCommand()),
+    SHOW_FILES(new ShowFilesCommand()),
+    DOWNLOAD_FILE(new DownloadFileCommand()),
+    DELETE_FILE(new DeleteFileCommand());
 
     Command command;
     CommandType(Command command) {

@@ -34,6 +34,7 @@ public class LoginCommand implements Command {
             EmployeeDto employee = employeeService.getEmployeeByUsername(username);
             session.setAttribute("employee", employee);
             session.setAttribute("username", username);
+            session.setAttribute("employeeId", employee.getId());
             session.setAttribute("authenticated", true);
 
             // Устанавливаем время жизни сессии (30 минут)
