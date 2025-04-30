@@ -38,8 +38,15 @@ public class LoginCommand implements Command {
             session.setAttribute("authenticated", true);
 
             // Устанавливаем время жизни сессии (30 минут)
+            logger.info(employee.getRole());
             session.setMaxInactiveInterval(30 * 60);
-            page = "redirect:controller?command=profile";
+            if(employee.isAdmin() || employee.isSuperAdmin()) {
+                page = "redirect:controller?command=admin_Panel";
+            } else if (employee.isModerator()) {
+                page = "redirect:controller?command=moderator_profile";
+            }else {
+                page = "redirect:controller?command=profile";
+            }
         } else {
             request.setAttribute("login_msg","Invalid login or password");
             page = "login.jsp";

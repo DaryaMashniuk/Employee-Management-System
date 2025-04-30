@@ -15,15 +15,16 @@ public class EmployeeDaoImpl implements EmployeeDao {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String FIND_ALL_EMPLOYEES_SQL = "SELECT * FROM employee";
     private static final String FIND_BY_USERNAME_SQL =
-            "SELECT id,first_name, last_name, username, address, email, avatar,description FROM employee WHERE username = ?";
+            "SELECT id,first_name, last_name, username, address, email, avatar,role FROM employee WHERE username = ?";
     private static final String EDIT_PROFILE =
             "UPDATE employee SET first_name = ?, last_name = ?, address = ?, email = ? WHERE username = ?";
     private static final String UPDATE_AVATAR_SQL =
             "UPDATE employee SET avatar = ? WHERE username = ?";
+    private static final String UPDATE_USER_ROLE = "UPDATE employee SET role = ? WHERE id = ?";
     private static final String GET_AVATAR_SQL =
             "SELECT avatar FROM employee WHERE username = ?";
     private static final String FIND_BY_ID_SQL =
-            "SELECT id, first_name, last_name, username, address, email, avatar FROM employee WHERE id = ?";
+            "SELECT id, first_name, last_name, username, address, email, avatar,role FROM employee WHERE id = ?";
 
     private static final EmployeeDaoImpl instance = new EmployeeDaoImpl();
 
@@ -75,6 +76,23 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
+    public boolean updateEmployeeRole(int userId, String newRole) {
+        try(Connection connection = ConnectionPool.getInstance().getConnection();
+        PreparedStatement stmt = connection.prepareStatement(UPDATE_USER_ROLE)) {
+
+            stmt.setString(1, newRole);
+            stmt.setInt(2, userId);
+
+            boolean success = stmt.executeUpdate() > 0;
+            LOGGER.info("Role update for {} {}", userId, success ? "succeeded" : "failed");
+            return success;
+        } catch (SQLException e) {
+            LOGGER.error("Error updating role for {}: {}", userId, e.getMessage(), e);
+            return false;
+        }
+    }
+
+    @Override
     public byte[] getEmployeeAvatar(String username) {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement stmt = connection.prepareStatement(GET_AVATAR_SQL)) {
@@ -101,11 +119,14 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
             while (resultSet.next()) {
                 EmployeeDto employee = EmployeeDtoImpl.builder()
+                        .id(resultSet.getInt("id"))
                         .firstName(resultSet.getString("first_name"))
                         .lastName(resultSet.getString("last_name"))
                         .username(resultSet.getString("username"))
                         .address(resultSet.getString("address"))
                         .email(resultSet.getString("email"))
+                        .avatar(resultSet.getBytes("avatar"))
+                        .role(resultSet.getString("role"))
                         .build();
                 employees.add(employee);
             }
@@ -133,6 +154,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
                         .address(resultSet.getString("address"))
                         .email(resultSet.getString("email"))
                         .avatar(resultSet.getBytes("avatar"))
+                        .role(resultSet.getString("role"))
                         .build();
             }
         } catch (SQLException e) {
@@ -159,6 +181,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
                         .address(resultSet.getString("address"))
                         .email(resultSet.getString("email"))
                         .avatar(resultSet.getBytes("avatar"))
+                        .role(resultSet.getString("role"))
                         .build();
             }
         } catch (SQLException e) {

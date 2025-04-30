@@ -7,5 +7,9 @@ public interface EmployeeDto {
     String getUsername();
     String getAddress();
     String getEmail();
+    String getRole();
     byte[] getAvatar();
+    boolean isAdmin();
+    boolean isSuperAdmin();
+    boolean isModerator();
 }

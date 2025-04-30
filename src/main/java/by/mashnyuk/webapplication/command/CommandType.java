@@ -14,6 +14,10 @@ public enum CommandType {
     UPLOAD_FILE(new UploadFileCommand()),
     SHOW_FILES(new ShowFilesCommand()),
     DOWNLOAD_FILE(new DownloadFileCommand()),
+    ADMIN_PANEL(new AdminPanelCommand()),
+    UPDATE_USER_ROLE(new UpdateUserRoleCommand()),
+    GLOBAL_FILES(new GlobalFilesCommand()),
+    MODERATOR_PROFILE(new ModeratorProfileCommand()),
     DELETE_FILE(new DeleteFileCommand());
 
     Command command;

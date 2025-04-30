@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="by.mashnyuk.webapplication.dto.EmployeeDto" %>
+<%@ page import="java.net.URLEncoder" %>
+<%@ page import="java.nio.charset.StandardCharsets" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 
 <%
@@ -28,7 +30,7 @@
     <h2>Your Information</h2>
     <div class="profile-info">
         <img id="avatarPreview"
-             src="${pageContext.request.contextPath}/controller?command=get_avatar&username=${employee.username}"
+             src="${pageContext.request.contextPath}/controller?command=get_avatar&username=<%=URLEncoder.encode(employee.getUsername(), StandardCharsets.UTF_8)%>"
              alt="Avatar Preview"
              class="avatar-preview">
         <p><strong>First Name:</strong> <%= employee.getFirstName() %></p>

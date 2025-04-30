@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 public class Employee implements AbstractEntity {
     private static final Logger logger = LogManager.getLogger();
     private int id;
+    private String role;
     private String firstName;
     private String lastName;
     private String username;
@@ -63,6 +64,9 @@ public class Employee implements AbstractEntity {
         this.password = password;
     }
 
+    public String getRole() {return role;}
+    public void setRole(String role) {this.role = role;}
+
     public String getAddress() {
         return address;
     }
@@ -82,5 +86,21 @@ public class Employee implements AbstractEntity {
     }
     public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
+    }
+
+    public boolean isUser() {
+        return "USER".equals(role);
+    }
+
+    public boolean isModerator() {
+        return "MODERATOR".equals(role);
+    }
+
+    public boolean isAdmin() {
+        return "ADMIN".equals(role);
+    }
+
+    public boolean isSuperAdmin() {
+        return "SUPER_ADMIN".equals(role);
     }
 }

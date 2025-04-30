@@ -20,7 +20,7 @@ public class UserFileServiceImpl implements UserFileService {
     public static UserFileService getInstance() {return instance;}
 
     @Override
-    public boolean saveFile(int userId, Part filePart, String description) {
+    public boolean saveFile(int userId, Part filePart, String description, boolean isGlobal) {
         if (filePart == null || filePart.getSize() == 0) {
             return false;
         }
@@ -37,7 +37,8 @@ public class UserFileServiceImpl implements UserFileService {
                     filePart.getSize(),
                     filePart.getContentType(),
                     filePart.getInputStream().readAllBytes(),
-                    description
+                    description,
+                    isGlobal
             );
             return userFileDao.saveFile(file);
         } catch (IOException e) {
@@ -62,8 +63,13 @@ public class UserFileServiceImpl implements UserFileService {
     }
 
     @Override
-    public boolean updateFileDescription(int fileId, int userId, String description) {
-        return userFileDao.updateFileDescription(fileId, userId, description);
+    public List<UserFile> getGlobalFiles() {
+        return userFileDao.getFilesByGlobalFlag(true);
+    }
+
+    @Override
+    public boolean saveGlobalFile(Part filePart, String description) {
+        return saveFile(1, filePart, description, true);
     }
 
     @Override

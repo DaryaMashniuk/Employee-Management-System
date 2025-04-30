@@ -10,5 +10,6 @@ public interface EmployeeDao  {
     EmployeeDto getEmployeeById(int id);
     void editProfile(EmployeeDto employeeDto);
     boolean updateEmployeeAvatar(String username, byte[] avatarData);
+    boolean updateEmployeeRole(int userId, String newRole);
     byte[] getEmployeeAvatar(String username);
 }

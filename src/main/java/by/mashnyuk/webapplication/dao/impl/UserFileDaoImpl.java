@@ -124,18 +124,29 @@ public class UserFileDaoImpl implements UserFileDao {
     }
 
     @Override
-    public boolean updateFileDescription(int fileId, int userId, String description) {
+    public List<UserFile> getFilesByGlobalFlag(boolean isGlobal) {
+        List<UserFile> files = new ArrayList<>();
+        String sql = "SELECT * FROM user_files WHERE is_global = ? ORDER BY upload_date DESC";
+
         try (Connection conn = ConnectionPool.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(UPDATE_DESCRIPTION_SQL)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, description);
-            stmt.setInt(2, fileId);
-            stmt.setInt(3, userId);
+            stmt.setBoolean(1, isGlobal);
+            ResultSet rs = stmt.executeQuery();
 
-            return stmt.executeUpdate() > 0;
+            while (rs.next()) {
+                UserFile file = new UserFile();
+                file.setId(rs.getInt("id"));
+                file.setFileName(rs.getString("file_name"));
+                file.setFileSize(rs.getLong("file_size"));
+                file.setFileType(rs.getString("file_type"));
+                file.setUploadDate(rs.getTimestamp("upload_date").toLocalDateTime());
+                file.setDescription(rs.getString("description"));
+                files.add(file);
+            }
         } catch (SQLException e) {
-            LOGGER.error("Error updating description for file {}: {}", fileId, e.getMessage());
-            return false;
+           LOGGER.error("Error getting global files", e);
         }
+        return files;
     }
 }

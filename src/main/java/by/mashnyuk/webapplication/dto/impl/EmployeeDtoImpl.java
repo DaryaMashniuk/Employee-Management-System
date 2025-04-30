@@ -12,6 +12,7 @@ public class EmployeeDtoImpl implements EmployeeDto {
     private String password;
     private String address;
     private String email;
+    private String role;
     private byte[] avatar;
 
     private EmployeeDtoImpl() {}
@@ -63,6 +64,10 @@ public class EmployeeDtoImpl implements EmployeeDto {
             return this;
         }
 
+        public Builder role(String role) {
+            dto.role = role;
+            return this;
+        }
 
         public EmployeeDtoImpl build() {
             return dto;
@@ -75,9 +80,21 @@ public class EmployeeDtoImpl implements EmployeeDto {
     public String getPassword() { return password; }
     @Override public String getAddress() { return address; }
     @Override public String getEmail() { return email; }
-    @Override
-    public byte[] getAvatar() {
+    @Override public String getRole() { return role; }
+    @Override public byte[] getAvatar() {
         return avatar;
+    }
+    public boolean isUser() {
+        return "USER".equals(role);
+    }
+    public boolean isModerator() {
+        return "MODERATOR".equals(role);
+    }
+    public boolean isAdmin() {
+        return "ADMIN".equals(role);
+    }
+    public boolean isSuperAdmin() {
+        return "SUPER_ADMIN".equals(role);
     }
 
 }

@@ -37,9 +37,6 @@
         <label for="email">Email</label>
         <input type="email" id="email" name="email" value="<%= employee.getEmail() %>" required/>
 
-        <label for="description">Description</label>
-        <textarea id="description" name="description" class="description-textarea"><%=
-        employee.getDescription() != null ? employee.getDescription() : "" %></textarea>
 
         <input type="submit" value="Save Changes" class="submit-button"/>
     </form>

@@ -11,17 +11,19 @@ public class UserFile {
     private byte[] fileData;
     private LocalDateTime uploadDate;
     private String description;
+    private boolean isGlobal;
 
     public UserFile() {}
 
     public UserFile(int userId, String fileName, long fileSize, String fileType,
-                    byte[] fileData, String description) {
+                    byte[] fileData, String description, boolean isGlobal) {
         this.userId = userId;
         this.fileName = fileName;
         this.fileSize = fileSize;
         this.fileType = fileType;
         this.fileData = fileData;
         this.description = description;
+        this.isGlobal = isGlobal;
     }
 
     public int getId() {
@@ -86,5 +88,13 @@ public class UserFile {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean getIsGlobal() {
+        return isGlobal;
+    }
+
+    public void setIsGlobal(boolean isGlobal) {
+        this.isGlobal = isGlobal;
     }
 }

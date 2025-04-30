@@ -8,5 +8,5 @@ public interface UserFileDao {
     UserFile getFileById(int fileId, int userId);
     List<UserFile> getUserFiles(int userId);
     boolean deleteFile(int fileId, int userId);
-    boolean updateFileDescription(int fileId, int userId, String description);
+    List<UserFile> getFilesByGlobalFlag(boolean isGlobal);
 }
